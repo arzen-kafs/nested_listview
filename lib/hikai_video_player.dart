@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:nested_listview/main.dart';
 import 'package:video_player/video_player.dart';
 
-
-
 class HikaiVideoPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -28,19 +26,16 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Video Player'),
       ),
       body: ListView(
         children: <Widget>[
-          VideoPlayerScreen(
-          ),
+          VideoPlayerScreen(),
           ExampleOne()
           // Text('$item')
         ],
-
       ),
     );
   }
@@ -71,6 +66,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
     // Use the controller to loop the video.
     _controller.setLooping(true);
+
+
     super.initState();
   }
 
@@ -83,51 +80,33 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-          future: _initializeVideoPlayerFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              // If the VideoPlayerController has finished initialization, use
-              // the data it provides to limit the aspect ratio of the video.
-              return AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                // Use the VideoPlayer widget to display the video.
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: <Widget>[
-                    VideoPlayer(_controller),
-                    ClosedCaption(text: _controller.value.caption.text),
-                    _ControlsOverlay(controller: _controller),
-                    VideoProgressIndicator(_controller, allowScrubbing: true),
-                  ],
-                ),
-              );
-            } else {
-              // If the VideoPlayerController is still initializing, show a
-              // loading spinner.
-              return Center(child: CircularProgressIndicator());
-            }
-          },
-        );
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Wrap the play or pause in a call to `setState`. This ensures the
-            // correct icon is shown.
-            setState(() {
-              // If the video is playing, pause it.
-              if (_controller.value.isPlaying) {
-                _controller.pause();
-              } else {
-                // If the video is paused, play it.
-                _controller.play();
-              }
-            });
-          },
-          // Display the correct icon depending on the state of the player.
-          child: Icon(
-            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-          ),
-
+    return Center(
+      child: FutureBuilder(
+        future: _initializeVideoPlayerFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            // If the VideoPlayerController has finished initialization, use
+            // the data it provides to limit the aspect ratio of the video.
+            return AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              // Use the VideoPlayer widget to display the video.
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: <Widget>[
+                  VideoPlayer(_controller),
+                  ClosedCaption(text: _controller.value.caption.text),
+                  _ControlsOverlay(controller: _controller),
+                  VideoProgressIndicator(_controller, allowScrubbing: true),
+                ],
+              ),
+            );
+          } else {
+            // If the VideoPlayerController is still initializing, show a
+            // loading spinner.
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
     );
   }
 }
@@ -158,21 +137,43 @@ class _ControlsOverlay extends StatelessWidget {
           child: controller.value.isPlaying
               ? SizedBox.shrink()
               : Container(
-            color: Colors.black26,
-            child: Center(
-              child: Icon(
-                Icons.play_arrow,
-                color: Colors.white,
-                size: 100.0,
-              ),
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            controller.value.isPlaying ? controller.pause() : controller.play();
-          },
-        ),
+                  color: Colors.black26,
+                    child: Center(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+
+                          IconButton(
+                            icon:Icon( Icons.fast_rewind) ,
+                            onPressed: () {
+                               controller.position;
+                            },
+                            iconSize: 50,
+                            color: Colors.white,
+                          ),
+                          IconButton(
+                            icon:Icon(controller.value.isPlaying ? Icons.pause : Icons.play_arrow) ,
+                            onPressed: () {
+                              controller.value.isPlaying ? controller.pause() : controller.play();
+                            },
+                            iconSize: 50,
+                            color: Colors.white,
+                          ),
+                          IconButton(
+                            icon:Icon( Icons.fast_forward) ,
+                            onPressed: () {
+                              controller.value.isPlaying ? controller.pause() : controller.play();
+                            },
+                            iconSize: 50,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
         Align(
           alignment: Alignment.topRight,
           child: PopupMenuButton<double>(
