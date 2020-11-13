@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:nested_listview/hikai_video_player.dart';
 import 'package:nested_listview/model.dart';
 
 void main() {
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: ExampleOne(title: 'Flutter Demo Home Page'),
+      home: HikaiVideoPlayer(),
     );
   }
 }
@@ -50,11 +51,9 @@ class ExampleOne extends StatefulWidget {
 class _ExampleOneState extends State<ExampleOne> {
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
-      ),
-      body: Center(
+    final screenHeight = MediaQuery.of(context).size.height;
+    return
+     Center(
         child: FutureBuilder(
             future: fetchCourse(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -63,79 +62,80 @@ class _ExampleOneState extends State<ExampleOne> {
               } else {
                 print("------");
                 print(snapshot.data[0].lecture);
-                return ListView.builder(
-                  itemBuilder: (context, Chapterindex) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(vertical: 1.0),
-                      child: Column(
-                        children: <Widget>[
-                          Card(
-                            child: Text("Welcome"),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.local_play_outlined),
-                            title: Text(
-                              snapshot.data[Chapterindex].title,
-                              style: TextStyle(
-                                  fontSize: 14.0, fontWeight: FontWeight.bold),
-                            ),
-                            //title: Text('$index',textAlign: TextAlign.center,),
-                            trailing: Text(
-                              "Total Lecture "+ snapshot.data[Chapterindex].items.toString(),
-                              style: TextStyle(fontSize: 14.0),
-                            ),
-                            onTap: () {
-                              print(fetchCourse);
-                            },
-                            //shape: Theme.of(context).textTheme.body2,
-                          ),
-                          Card(
-                            child: ListView.builder(
-                              // ignore: missing_return, non_constant_identifier_names
-                              itemBuilder: (context, Lectureindex) {
+                return SizedBox(
+                  height: screenHeight,
+                  child: ListView.builder(
+                    itemBuilder: (context, Chapterindex) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 1.0),
+                        child: Column(
+                          children: <Widget>[
 
-                                return Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 1.0,
-                                      vertical: 1.0,
-                                    ),
-                                    child: ListTile(
-                                      leading: Icon(Icons.play_circle_fill),
-
-                                      title: Text(snapshot.data[Chapterindex].lecture[Lectureindex].title,
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.bold)),
-                                      trailing: Wrap(
-                                        spacing: 12, // space between two icons
-                                        children: <Widget>[
-                                          Icon(Icons.download_sharp), // icon-1
-                                          Icon(Icons.share), // icon-2
-                                        ],
-                                      ),
-                                    )
-                                    //Padding(padding:EdgeInsets.only(left:650)),
-                                    // Icon(Icons.download_sharp),
-                                    // Icon(Icons.share)
-                                    );
+                            ListTile(
+                              leading: Icon(Icons.local_play_outlined),
+                              title: Text(
+                                snapshot.data[Chapterindex].title,
+                                style: TextStyle(
+                                    fontSize: 14.0, fontWeight: FontWeight.bold),
+                              ),
+                              //title: Text('$index',textAlign: TextAlign.center,),
+                              trailing: Text(
+                                "Total Lecture "+ snapshot.data[Chapterindex].items.toString(),
+                                style: TextStyle(fontSize: 14.0),
+                              ),
+                              onTap: () {
+                                print(fetchCourse);
                               },
-                              itemCount: snapshot.data[Chapterindex].lecture.length,
-                              shrinkWrap: true,
-                              // todo comment this out and check the result
-                              physics:
-                                  ClampingScrollPhysics(), // todo comment this out and check the result
+                              //shape: Theme.of(context).textTheme.body2,
                             ),
-                            elevation: 8,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  itemCount: snapshot.data.length,
+                            Card(
+                              child: ListView.builder(
+                                // ignore: missing_return, non_constant_identifier_names
+                                itemBuilder: (context, Lectureindex) {
+
+                                  return Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 1.0,
+                                        vertical: 1.0,
+                                      ),
+                                      child: ListTile(
+                                        leading: Icon(Icons.play_circle_fill),
+
+                                        title: Text(snapshot.data[Chapterindex].lecture[Lectureindex].title,
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold)),
+                                        trailing: Wrap(
+                                          spacing: 12, // space between two icons
+                                          children: <Widget>[
+                                            Icon(Icons.download_sharp), // icon-1
+                                            Icon(Icons.share), // icon-2
+                                          ],
+                                        ),
+                                      )
+                                      //Padding(padding:EdgeInsets.only(left:650)),
+                                      // Icon(Icons.download_sharp),
+                                      // Icon(Icons.share)
+                                      );
+                                },
+                                itemCount: snapshot.data[Chapterindex].lecture.length,
+                                shrinkWrap: true,
+                                // todo comment this out and check the result
+                                physics:
+                                    ClampingScrollPhysics(), // todo comment this out and check the result
+                              ),
+                              elevation: 8,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    itemCount: snapshot.data.length,
+                  ),
                 );
               }
             }),
-      ),
+      
     );
   }
 
